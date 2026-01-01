@@ -1,0 +1,631 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Kitchen by Okra | The Full Experience</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;1,400&family=Plus+Jakarta+Sans:wght@300;400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        :root { 
+            --gold: #FFD700;
+            --white: #ffffff;
+            --glass: rgba(0, 0, 0, 0.75);
+            --border: rgba(255, 215, 0, 0.3);
+            --nav-blue: #a0c4ff;
+        }
+        
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { 
+            background: #000; 
+            color: var(--white); 
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            overflow-x: hidden;
+        }
+
+        /* --- TOP BAR NAVIGATION --- */
+        .top-bar {
+            background: #111;
+            padding: 15px 2%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 10001;
+            border-bottom: 1px solid #222;
+        }
+
+        .nav-left, .nav-right {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+            flex: 1;
+        }
+
+        .nav-right { justify-content: flex-end; }
+
+        .nav-link {
+            color: var(--nav-blue);
+            text-decoration: none;
+            font-size: 13px;
+            font-weight: 600;
+            transition: 0.3s;
+            white-space: nowrap;
+        }
+
+        .nav-link:hover { color: var(--gold); }
+
+        .brand-center {
+            font-family: 'Playfair Display', serif;
+            font-size: 16px;
+            letter-spacing: 2px;
+            color: var(--white);
+            text-align: center;
+            white-space: nowrap;
+            padding: 0 20px;
+        }
+
+        .nav-icons {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+            color: var(--nav-blue);
+            margin-left: 10px;
+        }
+
+        .cart-icon {
+            position: relative;
+            cursor: pointer;
+        }
+
+        .cart-count {
+            position: absolute;
+            top: -8px;
+            right: -10px;
+            background: #000;
+            border: 1px solid var(--nav-blue);
+            font-size: 10px;
+            padding: 1px 4px;
+            border-radius: 50%;
+        }
+
+        /* --- HAMBURGER MENU --- */
+        .hamburger {
+            display: none;
+            cursor: pointer;
+            font-size: 22px;
+            color: var(--gold);
+            z-index: 10002;
+        }
+
+        .mobile-menu {
+            position: fixed;
+            top: 0;
+            right: -100%;
+            width: 100%;
+            height: 100vh;
+            background: rgba(0,0,0,0.98);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            gap: 30px;
+            transition: 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            z-index: 10001;
+        }
+
+        .mobile-menu.active { right: 0; }
+        .mobile-menu .nav-link { font-size: 24px; }
+
+        @media (max-width: 1100px) {
+            .nav-left, .nav-right { display: none; }
+            .hamburger { display: block; }
+            .top-bar { padding: 15px 5%; }
+            .brand-center { flex: 1; text-align: center; }
+        }
+
+        /* FLOATING INSTAGRAM LOGO */
+        .floating-ig {
+            position: fixed;
+            left: 20px;
+            bottom: 50%;
+            transform: translateY(50%);
+            z-index: 9999;
+            transition: all 0.3s ease;
+        }
+        .floating-ig a {
+            display: block;
+            width: 35px;
+            height: 35px;
+            text-decoration: none;
+            transition: 0.3s;
+        }
+        .floating-ig img {
+            width: 100%;
+            height: 100%;
+            border-radius: 8px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+        }
+        .floating-ig a:hover { transform: scale(1.1); filter: brightness(1.1); }
+
+        /* FULL PAGE BACKGROUND SECTIONS */
+        .page-section {
+            min-height: 100vh;
+            width: 100%;
+            background-attachment: fixed;
+            background-position: center;
+            background-size: cover;
+            display: flex;
+            flex-direction: column;
+            padding: 100px 5%;
+            border-bottom: 2px solid var(--gold);
+        }
+
+        .hero-bg { background-image: linear-gradient(rgba(0,0,0,0.4), #000), url('https://images.unsplash.com/photo-1509440159596-0249088772ff?q=80&w=1600'); justify-content: center; align-items: center; }
+        .bakery-bg { background-image: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)), url('https://images.unsplash.com/photo-1555507036-ab1f4038808a?q=80&w=1600'); }
+        .deli-bg { background-image: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)), url('https://images.unsplash.com/photo-1553909489-cd47e0907980?q=80&w=1600'); }
+        .drinks-bg { background-image: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)), url('https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?q=80&w=1600'); }
+
+        .logo { font-family: 'Playfair Display', serif; font-size: 60px; letter-spacing: 12px; color: var(--gold); text-align: center; }
+        .section-title { 
+            font-family: 'Playfair Display', serif; font-size: 50px; 
+            margin-bottom: 50px; border-left: 5px solid var(--gold); padding-left: 20px;
+        }
+
+        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 30px; }
+        .item-card {
+            background: var(--glass);
+            backdrop-filter: blur(10px);
+            padding: 30px;
+            border: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            transition: 0.3s;
+        }
+        .item-card:hover { background: rgba(255, 215, 0, 0.1); border-color: var(--gold); }
+        .item-card h3 { font-family: 'Playfair Display'; font-size: 1.2rem; flex: 1; }
+        .price { color: var(--gold); font-weight: 700; margin-left: 15px; }
+
+        .sticky-search {
+            position: sticky; top: 58px; background: rgba(0,0,0,0.9);
+            padding: 20px 5%; z-index: 1000; text-align: center;
+        }
+        #search { width: 100%; max-width: 600px; padding: 15px; border-radius: 50px; border: 1px solid var(--gold); background: transparent; color: white; outline: none; }
+
+        /* --- REVIEW SECTION STYLES --- */
+        .review-section { padding: 80px 5%; background: #080808; border-bottom: 2px solid var(--gold); }
+        
+        .review-form-container { 
+            background: var(--glass); 
+            border: 1px solid var(--border); 
+            padding: 40px; 
+            border-radius: 15px; 
+            max-width: 700px; 
+            margin: 0 auto 60px auto;
+            backdrop-filter: blur(10px);
+        }
+
+        .review-field { margin-bottom: 20px; }
+        .review-field label { display: block; margin-bottom: 8px; color: var(--gold); font-size: 14px; }
+        .review-field input, .review-field textarea { 
+            width: 100%; padding: 12px; background: rgba(255,255,255,0.05); 
+            border: 1px solid #333; color: white; border-radius: 5px; outline: none;
+        }
+
+        .star-input { display: flex; gap: 10px; margin-bottom: 20px; cursor: pointer; font-size: 22px; color: #333; }
+        
+        /* FIX: Added Glow and scaling for active stars */
+        .star-input i { transition: all 0.2s ease; }
+        .star-input i.active { 
+            color: var(--gold); 
+            text-shadow: 0 0 12px rgba(255, 215, 0, 0.7); 
+            transform: scale(1.1);
+        }
+
+        /* FIX: Pulse Animation */
+        .star-pulse { animation: pulse 0.3s ease-out; }
+        @keyframes pulse {
+            0% { transform: scale(1.1); }
+            50% { transform: scale(1.4); }
+            100% { transform: scale(1.1); }
+        }
+
+        .file-upload-label { 
+            display: inline-block; padding: 10px 20px; border: 1px dashed var(--gold); 
+            color: var(--gold); cursor: pointer; transition: 0.3s;
+        }
+        .file-upload-label:hover { background: rgba(255, 215, 0, 0.1); }
+        
+        /* PHOTO PREVIEW STYLES */
+        .preview-wrapper {
+            position: relative;
+            display: inline-block;
+            margin-top: 15px;
+        }
+        
+        #reviewImgPreview { 
+            width: 100px; height: 100px; object-fit: cover; 
+            display: none; 
+            border: 1px solid var(--gold); border-radius: 5px; 
+        }
+
+        .remove-img-btn {
+            position: absolute;
+            top: -10px;
+            right: -10px;
+            background: #ff4d4d;
+            color: white;
+            border-radius: 50%;
+            width: 22px;
+            height: 22px;
+            display: none; /* Initially hidden */
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 12px;
+            border: 2px solid #000;
+            z-index: 10;
+        }
+
+        .submit-rev-btn { 
+            width: 100%; padding: 15px; background: var(--gold); color: black; 
+            font-weight: 700; border: none; cursor: pointer; letter-spacing: 1px;
+        }
+
+        .review-card { 
+            background: var(--glass); border: 1px solid #222; 
+            padding: 20px; border-radius: 10px; position: relative;
+        }
+
+        .rev-actions {
+            position: absolute; top: 15px; right: 15px;
+            display: flex; gap: 12px;
+        }
+        .rev-actions i {
+            cursor: pointer; font-size: 14px; color: #666; transition: 0.3s;
+        }
+        .rev-actions i:hover { color: var(--gold); }
+        .rev-actions i.fa-trash:hover { color: #ff4d4d; }
+
+        .rev-name { font-weight: 700; color: var(--gold); display: block; margin-bottom: 5px; }
+        .rev-stars { color: var(--gold); font-size: 12px; margin-bottom: 10px; }
+        .rev-text { font-size: 14px; color: #ccc; line-height: 1.5; margin-bottom: 15px; }
+        .rev-photo { width: 100%; height: 200px; object-fit: cover; border-radius: 8px; }
+
+        footer { background: #000; padding: 60px 5%; text-align: center; border-top: 1px solid #222; }
+        .footer-nav { font-size: 14px; color: #888; letter-spacing: 1px; }
+        .footer-nav span { color: var(--white); font-weight: 700; text-transform: uppercase; }
+        .footer-nav a { color: #888; text-decoration: none; margin: 0 10px; }
+    </style>
+</head>
+<body>
+
+    <nav class="top-bar">
+        <div class="nav-left">
+            <a href="#" class="nav-link">Home</a>
+            <a href="#" class="nav-link">About Us</a>
+            <a href="#" class="nav-link">Reserve Now</a>
+            <a href="#" class="nav-link">Order Now <i class="fa-solid fa-chevron-down" style="font-size: 10px;"></i></a>
+        </div>
+        <div class="brand-center">TEST KITCHEN BY OKRA</div>
+        <div class="nav-right">
+            <a href="#" class="nav-link">Coffee Club</a>
+            <a href="#" class="nav-link">Blogs</a>
+            <a href="#" class="nav-link">Franchising</a>
+            <a href="#" class="nav-link">Contact</a>
+            <div class="nav-icons">
+                <i class="fa-regular fa-user"></i>
+                <div class="cart-icon">
+                    <i class="fa-solid fa-bag-shopping"></i>
+                    <span class="cart-count">0</span>
+                </div>
+            </div>
+        </div>
+        <div class="hamburger" id="hamburger"><i class="fa-solid fa-bars"></i></div>
+    </nav>
+
+    <div class="mobile-menu" id="mobile-menu">
+        <a href="#" class="nav-link">Home</a>
+        <a href="#" class="nav-link">About Us</a>
+        <a href="#" class="nav-link">Reserve Now</a>
+        <a href="#" class="nav-link">Order Now</a>
+        <a href="#" class="nav-link">Coffee Club</a>
+        <a href="#" class="nav-link">Blogs</a>
+        <a href="#" class="nav-link">Franchising</a>
+        <a href="#" class="nav-link">Contact</a>
+    </div>
+
+    <div class="floating-ig">
+        <a href="https://www.instagram.com/testkitchenbyokra/?hl=en" target="_blank">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/e/e7/Instagram_logo_2016.svg" alt="Instagram">
+        </a>
+    </div>
+
+    <section class="page-section hero-bg">
+        <div class="logo">TEST KITCHEN</div>
+        <p style="letter-spacing: 5px; margin-top: 10px; color: #ccc;">BY OKRA • ARTISAN DELI</p>
+    </section>
+
+    <div class="sticky-search">
+        <input type="text" id="search" placeholder="Search the collection..." onkeyup="filter()">
+    </div>
+
+    <section class="page-section bakery-bg" id="bakery">
+        <h2 class="section-title">Boulangerie</h2>
+        <div class="grid">
+            <div class="item-card"><h3>Plain Croissant</h3><span class="price">Rs. 610</span></div>
+            <div class="item-card"><h3>Pain au Chocolat</h3><span class="price">Rs. 610</span></div>
+            <div class="item-card"><h3>Almond Croissant</h3><span class="price">Rs. 725</span></div>
+            <div class="item-card"><h3>Pastel de Nata</h3><span class="price">Rs. 595</span></div>
+            <div class="item-card"><h3>Maritozzo</h3><span class="price">Rs. 415</span></div>
+            <div class="item-card"><h3>Brownie</h3><span class="price">Rs. 585</span></div>
+            <div class="item-card"><h3>Rocky Road Bar 100G</h3><span class="price">Rs. 585</span></div>
+            <div class="item-card"><h3>Scones</h3><span class="price">Rs. 215</span></div>
+        </div>
+    </section>
+
+    <section class="page-section deli-bg" id="deli">
+        <h2 class="section-title">The Deli</h2>
+        <div class="grid">
+            <div class="item-card"><h3>Pesto Chicken Club</h3><span class="price">Rs. 1875</span></div>
+            <div class="item-card"><h3>Cubano Sandwich</h3><span class="price">Rs. 1765</span></div>
+            <div class="item-card"><h3>Steak on Sourdough</h3><span class="price">Rs. 2235</span></div>
+            <div class="item-card"><h3>Passandey (Ciabatta)</h3><span class="price">Rs. 1765</span></div>
+            <div class="item-card"><h3>Lime Chicken (Ciabatta)</h3><span class="price">Rs. 1695</span></div>
+            <div class="item-card"><h3>Salt Beef Sourdough</h3><span class="price">Rs. 1625</span></div>
+            <div class="item-card"><h3>French Dip Beef</h3><span class="price">Rs. 1825</span></div>
+            <div class="item-card"><h3>TK Dog</h3><span class="price">Rs. 1485</span></div>
+        </div>
+    </section>
+
+    <section class="page-section drinks-bg" id="drinks">
+        <h2 class="section-title">Beverages</h2>
+        <div class="grid">
+            <div class="item-card"><h3>Iced Spanish Latte</h3><span class="price">Rs. 745</span></div>
+            <div class="item-card"><h3>Peach Iced Tea</h3><span class="price">Rs. 710</span></div>
+            <div class="item-card"><h3>Cappuccino</h3><span class="price">Rs. 625</span></div>
+            <div class="item-card"><h3>Americano</h3><span class="price">Rs. 525</span></div>
+            <div class="item-card"><h3>Lemonade</h3><span class="price">Rs. 515</span></div>
+            <div class="item-card"><h3>Iced Latte</h3><span class="price">Rs. 695</span></div>
+        </div>
+    </section>
+
+    <section class="review-section" id="reviews-anchor">
+        <h2 class="section-title">Reviews</h2>
+        
+        <div class="review-form-container">
+            <h3 style="margin-bottom: 20px; font-family: 'Playfair Display';" id="form-title">Rate Your Experience</h3>
+            
+            <div class="review-field">
+                <label>Name</label>
+                <input type="text" id="userName" placeholder="Your name">
+            </div>
+
+            <div class="review-field">
+                <label>Rating</label>
+                <div class="star-input" id="starInput">
+                    <i class="fa-solid fa-star" data-value="1"></i>
+                    <i class="fa-solid fa-star" data-value="2"></i>
+                    <i class="fa-solid fa-star" data-value="3"></i>
+                    <i class="fa-solid fa-star" data-value="4"></i>
+                    <i class="fa-solid fa-star" data-value="5"></i>
+                </div>
+            </div>
+
+            <div class="review-field">
+                <label>Comment</label>
+                <textarea id="userComment" rows="3" placeholder="What did you try?"></textarea>
+            </div>
+
+            <div class="review-field">
+                <label class="file-upload-label" for="foodImg">
+                    <i class="fa-solid fa-camera"></i> Attach Food Photo
+                </label>
+                <input type="file" id="foodImg" hidden accept="image/*">
+                
+                <div class="preview-wrapper">
+                    <span class="remove-img-btn" id="removeImgBtn" onclick="removeAttachment()">
+                        <i class="fa-solid fa-xmark"></i>
+                    </span>
+                    <img id="reviewImgPreview" alt="Food Preview">
+                </div>
+            </div>
+
+            <button class="submit-rev-btn" id="submitBtn" onclick="submitReview()">Post Review</button>
+        </div>
+
+        <div class="grid" id="reviewsGrid">
+            <div class="review-card" id="sample-1">
+                <div class="rev-actions">
+                    <i class="fa-solid fa-pen-to-square" onclick="editReview('sample-1')"></i>
+                    <i class="fa-solid fa-trash" onclick="deleteReview('sample-1')"></i>
+                </div>
+                <span class="rev-name">Sarah J.</span>
+                <div class="rev-stars" data-rating="5"><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i></div>
+                <p class="rev-text">The Croissants are so flaky and authentic. Best breakfast spot!</p>
+                <img src="https://images.unsplash.com/photo-1555507036-ab1f4038808a?q=80&w=400" class="rev-photo">
+            </div>
+        </div>
+    </section>
+
+    <footer>
+        <div class="footer-nav">
+            POWERED BY <span>NEXT-STEP WEBSITES FOR OKRA</span> | <a href="#">Privacy Policy</a> | <a href="#">FAQs</a>
+        </div>
+        <p style="font-size: 10px; color: #444; margin-top: 30px;">ALL Prices are Subject to 8% card & 15% Cash GST</p>
+    </footer>
+
+    <script>
+        const hamburger = document.getElementById('hamburger');
+        const mobileMenu = document.getElementById('mobile-menu');
+
+        hamburger.onclick = () => {
+            mobileMenu.classList.toggle('active');
+            hamburger.querySelector('i').classList.toggle('fa-bars');
+            hamburger.querySelector('i').classList.toggle('fa-xmark');
+        };
+
+        function filter() {
+            let val = document.getElementById('search').value.toLowerCase();
+            document.querySelectorAll('.item-card').forEach(card => {
+                card.style.display = card.innerText.toLowerCase().includes(val) ? "flex" : "none";
+            });
+        }
+
+        /* REVIEW LOGIC */
+        let currentRating = 0;
+        let isEditing = false;
+        let editTargetId = null;
+        const starIcons = document.querySelectorAll('#starInput i');
+        
+        starIcons.forEach(star => {
+            star.onclick = () => {
+                currentRating = star.getAttribute('data-value');
+                updateStars(currentRating);
+                
+                // Add a quick pulse animation to the clicked star
+                star.classList.add('star-pulse');
+                setTimeout(() => {
+                    star.classList.remove('star-pulse');
+                }, 300);
+            }
+        });
+
+        function updateStars(rating) {
+            starIcons.forEach((s, index) => {
+                if (index < rating) {
+                    s.classList.add('active');
+                } else {
+                    s.classList.remove('active');
+                }
+            });
+        }
+
+        const foodImgInput = document.getElementById('foodImg');
+        const preview = document.getElementById('reviewImgPreview');
+        const removeBtn = document.getElementById('removeImgBtn');
+
+        foodImgInput.onchange = () => {
+            const file = foodImgInput.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    preview.src = e.target.result;
+                    preview.style.display = 'block';
+                    removeBtn.style.display = 'flex'; // Show remove button
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+
+        // NEW: Function to remove the attached image
+        function removeAttachment() {
+            foodImgInput.value = ""; // Clear file input
+            preview.src = "";
+            preview.style.display = 'none';
+            removeBtn.style.display = 'none';
+        }
+
+        function submitReview() {
+            const name = document.getElementById('userName').value;
+            const comment = document.getElementById('userComment').value;
+            const grid = document.getElementById('reviewsGrid');
+
+            if(!name || !comment || currentRating === 0) {
+                alert("Please complete the form!");
+                return;
+            }
+
+            let starHtml = '';
+            for(let i=0; i<currentRating; i++) starHtml += '<i class="fa-solid fa-star"></i>';
+
+            if (isEditing) {
+                const card = document.getElementById(editTargetId);
+                card.querySelector('.rev-name').innerText = name;
+                card.querySelector('.rev-text').innerText = comment;
+                card.querySelector('.rev-stars').innerHTML = starHtml;
+                card.querySelector('.rev-stars').setAttribute('data-rating', currentRating);
+                
+                let img = card.querySelector('.rev-photo');
+                if (preview.style.display === 'block') {
+                    if (!img) {
+                        img = document.createElement('img');
+                        img.className = 'rev-photo';
+                        card.appendChild(img);
+                    }
+                    img.src = preview.src;
+                } else {
+                    // If image was removed during edit, remove it from card too
+                    if(img) img.remove();
+                }
+                resetForm();
+            } else {
+                const newId = 'rev-' + Date.now();
+                const card = document.createElement('div');
+                card.className = 'review-card';
+                card.id = newId;
+                card.innerHTML = `
+                    <div class="rev-actions">
+                        <i class="fa-solid fa-pen-to-square" onclick="editReview('${newId}')"></i>
+                        <i class="fa-solid fa-trash" onclick="deleteReview('${newId}')"></i>
+                    </div>
+                    <span class="rev-name">${name}</span>
+                    <div class="rev-stars" data-rating="${currentRating}">${starHtml}</div>
+                    <p class="rev-text">${comment}</p>
+                    ${preview.style.display === 'block' ? `<img src="${preview.src}" class="rev-photo">` : ''}
+                `;
+                grid.prepend(card);
+                resetForm();
+            }
+        }
+
+        function deleteReview(id) {
+            if(confirm("Remove this review?")) {
+                document.getElementById(id).remove();
+            }
+        }
+
+        function editReview(id) {
+            const card = document.getElementById(id);
+            isEditing = true;
+            editTargetId = id;
+
+            document.getElementById('userName').value = card.querySelector('.rev-name').innerText;
+            document.getElementById('userComment').value = card.querySelector('.rev-text').innerText;
+            currentRating = card.querySelector('.rev-stars').getAttribute('data-rating');
+            updateStars(currentRating);
+
+            const cardImg = card.querySelector('.rev-photo');
+            if (cardImg) {
+                preview.src = cardImg.src;
+                preview.style.display = 'block';
+                removeBtn.style.display = 'flex';
+            } else {
+                preview.style.display = 'none';
+                removeBtn.style.display = 'none';
+            }
+
+            document.getElementById('form-title').innerText = "Edit Your Review";
+            document.getElementById('submitBtn').innerText = "Update Review";
+            window.scrollTo({ top: document.getElementById('reviews-anchor').offsetTop - 80, behavior: 'smooth' });
+        }
+
+        function resetForm() {
+            document.getElementById('userName').value = '';
+            document.getElementById('userComment').value = '';
+            document.getElementById('foodImg').value = '';
+            preview.style.display = 'none';
+            preview.src = '';
+            removeBtn.style.display = 'none';
+            updateStars(0);
+            currentRating = 0;
+            isEditing = false;
+            editTargetId = null;
+            document.getElementById('form-title').innerText = "Rate Your Experience";
+            document.getElementById('submitBtn').innerText = "Post Review";
+        }
+    </script>
+</body>
+</html>
